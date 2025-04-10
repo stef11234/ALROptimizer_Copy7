@@ -107,7 +107,8 @@ def int_to_list(x):
 class SWEEP():
     def __init__(self, dataset = 'CIFAR100', M = 10, L = 50000, lr = 0.01, epochs = 10, optimizer = 'SGDUPD',
                  save_results = True, repeat_dataset = 1, batch_size_test = 10000, eta_m = 0.7375, eta_p = 1.2, 
-                 min_lr = 1e-6, max_lr = 0.1, network = 'CNN', s_plus = 0, s_min = 0, name = 'name', plot = False):
+                 min_lr = 1e-6, max_lr = 0.1, network = 'CNN', s_plus = 0, s_min = 0, name = 'name', plot = False, 
+                 start_run = 0):
         self.dataset = dataset  #Which dataset to use
         self.repeat_dataset = repeat_dataset #How many times to repeat the data set
         self.batch_size_test = batch_size_test
@@ -137,14 +138,14 @@ class SWEEP():
 
         self.name = name
         self.plot = plot
-        self.n_sweep = 0
-        self.n_run = 0
+        self.n_sweep = 1
+        self.n_run = start_run
         self.sweep_par = self.sweep_parameters()
         
 
     def sweep(self):
         for i in range(self.n_sweeps):
-            self.n_run = i+1
+            self.n_run +=1
             [M, L, lr] = self.sweep_par[i,:] 
             device = 'cuda' if torch.cuda.is_available() else 'cpu' #Might be put in Sweep
             network = self.network_type(device)
