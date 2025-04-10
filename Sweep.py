@@ -143,16 +143,13 @@ class SWEEP():
         
 
     def sweep(self):
-        device = 'cuda' if torch.cuda.is_available() else 'cpu' #Might be put in Sweep
-        network = self.network_type(device)
-        test_loader = self.build_test_dataset()
         for i in range(self.n_sweeps):
             self.n_run = i+1
             [M, L, lr] = self.sweep_par[i,:] 
-            if i == 0:
-                loader = self.build_dataset(int(M))
-            elif self.sweep_par[i-1,0] != self.sweep_par[i,0]:
-                loader = self.build_dataset(int(M))
+            device = 'cuda' if torch.cuda.is_available() else 'cpu' #Might be put in Sweep
+            network = self.network_type(device)
+            test_loader = self.build_test_dataset()
+            loader = self.build_dataset(int(M))
             print('Run =', i+1)
             print('M =', M)
             print('L =', L)
