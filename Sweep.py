@@ -168,6 +168,8 @@ class SWEEP():
         loss_train, acc_train = [], []
         ps = 10000 #print step
         for epoch in range(1, self.epochs+1):
+            #if epoch % 10 == 0:
+            #    optimizer = self.optimizer_type(network, M, L, lr)
             network.train()
             loss_3000 = 0
             for batch_idx, (data, target) in enumerate(loader):
@@ -177,6 +179,8 @@ class SWEEP():
                 loss = F.nll_loss(output, target)
                 loss_3000 += loss
                 loss.backward()
+                #if self.optimizer == 'SGDUPR':
+                 #   optimizer.epoch = epoch
                 optimizer.step()
                 if ((batch_idx+1)*len(data))%ps==0:
                     if M<ps:
@@ -246,6 +250,8 @@ class SWEEP():
             return Custom_Optimizers.ADAMUPDL(network.parameters(), M=M, L=L, lr=lr, etas=(self.eta_m, self.eta_p), lr_limits=(self.min_lr, self.max_lr), track_lr=True, L_update_type = self.L_update_type, L_update_step = self.L_update_step, s_plus = self.s_plus, s_min = self.s_min, max_L = self.max_L, min_L = self.min_L)
         elif self.optimizer == 'SGDUPD':
             return Custom_Optimizers.SGDUPD(network.parameters(), M=M, L=L, lr=lr, etas=(self.eta_m, self.eta_p), lr_limits=(self.min_lr, self.max_lr), track_lr=True)
+        elif self.optimizer == 'SGDUPDR':
+            return Custom_Optimizers.SGDUPDR(network.parameters(), M=M, L=L, lr=lr, etas=(self.eta_m, self.eta_p), lr_limits=(self.min_lr, self.max_lr), track_lr=True)
         elif self.optimizer == 'SGDUPDL' or self.optimizer == 'SGDUpdL':
             return Custom_Optimizers.SGDUPDL(network.parameters(), M=M, L=L, lr=lr, etas=(self.eta_m, self.eta_p), lr_limits=(self.min_lr, self.max_lr), track_lr=True, L_update_type = self.L_update_type, L_update_step = self.L_update_step, s_plus = self.s_plus, s_min = self.s_min, max_L = self.max_L, min_L = self.min_L)
         elif self.optimizer == 'SGD':
@@ -257,7 +263,7 @@ class SWEEP():
 
     def save_data(self, name, loss_t, loss_v, acc_t, acc_v, lr_m, lr_std, s_min, s_plus, mb, lrb, lr, optimizer):
         if self.save_results == True:
-            if self.optimizer == 'SGDUPD' or self.optimizer == 'ADAMUPD' or self.optimizer == 'SRPROP':
+            if self.optimizer == 'SGDUPD' or self.optimizer == 'SGDUPDR' or self.optimizer == 'ADAMUPD' or self.optimizer == 'SRPROP':
                 save_data(name, ['empty'], ['empty'], loss_t, loss_v, acc_t, acc_v, lr_m, lr_std, ['empty'], ['empty'], [mb], [lrb], [lr], 
                             ['empty'], ['empty'], [self.optimizer], [self.network], [self.max_lr], [self.min_lr])
             elif self.optimizer == 'SGDUPDL' or self.optimizer == 'ADAMUPDL' or self.optimizer == 'SRPROPL':
